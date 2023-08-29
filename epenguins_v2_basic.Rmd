@@ -1,0 +1,65 @@
+---
+title: "Efficient Penguins"
+author: "DanSchmutz"
+date: "2023-08-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+library(performance)
+```
+
+## Palmer Penguins Analyses
+
+
+```{r penguins}
+pspecies<-'Chinstrap'
+pdata<-penguins %>% filter(species==pspecies)
+
+```
+
+This report summarizes what we know from the Palmer Penguins dataset about `r pspecies` penguins.
+
+```{r}
+summary(pdata)
+```
+
+## Penguin Plots
+
+What island(s) are `r paste(pspecies,"s",sep='')` found on?
+
+```{r island, echo=FALSE}
+ggplot(pdata,aes(x=island))+geom_bar()+scale_x_discrete(drop=FALSE)
+```
+
+Is there sexual dimorphism in `r paste(pspecies,"s",sep='')`? A violin plot with an overlayed small boxplot can help us find out.
+
+```{r sex, echo=FALSE}
+ggplot(pdata,aes(x=sex, y=body_mass_g))+geom_violin()+geom_boxplot(width=.2)
+```
+
+Are bill and flipper length related in `r paste(pspecies,"s",sep='')`? A scatterplot with linear smoother and 95% confidence interval guides us.
+
+```{r billflip, echo=FALSE}
+ggplot(pdata,aes(x=bill_length_mm, y=flipper_length_mm))+geom_point()+stat_smooth(method='lm')
+```
+
+## Linear Statistal Model of bill/flipper relationship
+Let's check by making a linear regression.
+
+```{r statmodel, echo=FALSE}
+lm1<-lm(flipper_length_mm~bill_length_mm, data=pdata)
+summary(lm1)
+```
+
+Let's check our assumptions for this model.
+```{r assuming, echo=FALSE}
+check_model(lm1)
+```
+
+
+
+
